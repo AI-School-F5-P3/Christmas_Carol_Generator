@@ -3,6 +3,8 @@ import streamlit as st
 from openai import AzureOpenAI, OpenAI
 from dotenv import load_dotenv
 import requests
+import elevenlabs
+from elevenlabs import generate, save
 
 # Cargar variables de entorno
 load_dotenv()
