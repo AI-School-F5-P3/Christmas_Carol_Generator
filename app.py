@@ -3,6 +3,8 @@ import streamlit as st
 from openai import AzureOpenAI, OpenAI
 from dotenv import load_dotenv
 import requests
+import magenta.music as mm
+from magenta.protobuf import music_pb2
 
 # Cargar variables de entorno
 load_dotenv()
@@ -35,7 +37,6 @@ openai_client = OpenAI(
 def generar_letra_villancico(prompt, nombre_nino=None, edad_nino=None):
     """Generar letras de villancicos usando ChatGPT"""
     try:
-        # Personalizar el prompt si se proporcionan detalles del niño
         if nombre_nino and edad_nino:
             prompt_completo = f"""Crea un villancico navideño sobre {prompt} para un niño llamado {nombre_nino}, de {edad_nino} años. 
             Haz la letra divertida, entretenida y apropiada para un niño. Incluye el nombre del niño en el villancico si es posible."""
@@ -57,14 +58,10 @@ def generar_letra_villancico(prompt, nombre_nino=None, edad_nino=None):
 def generar_imagen_villancico(prompt):
     """Generar una imagen navideña usando DALL-E"""
     try:
-        # Imprimir información de depuración
         st.write("Generando imagen con prompt:", prompt)
-        
-        # Verificar credenciales
         st.write("Endpoint de Azure:", os.getenv("OPENAI_API_BASE"))
         st.write("Versión de API:", os.getenv("API_VERSION"))
         
-        # Intentar generar imagen
         response = client2.images.generate(
             model="dall-e-3",
             prompt=f"Ilustración mágica navideña de {prompt}, alegre, colorida, estilo amigable para niños",
@@ -72,20 +69,42 @@ def generar_imagen_villancico(prompt):
             size="1024x1024"
         )
         
-        # Verificar la respuesta
         st.write("Respuesta de imagen:", response)
-        
-        # Extraer y devolver la URL de la imagen
         imagen_url = response.data[0].url
         return imagen_url
     except Exception as e:
         st.error(f"Error al generar la imagen del villancico: {e}")
-        # Imprimir el error completo para diagnóstico
         st.error(f"Detalles del error: {str(e)}")
         return None
 
+def generar_musica_navideña(letra):
+    try:
+        # Crear una melodía simple sin modelo pre-entrenado
+        notes = [60, 62, 64, 65, 67, 69, 71, 72]  # Escala de Do mayor
+        times = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
+        durations = [0.5] * len(notes)
+        
+        # Crear secuencia MIDI
+        sequence = music_pb2.NoteSequence()
+        for note, time, duration in zip(notes, times, durations):
+            sequence.notes.add(
+                pitch=note,
+                start_time=time,
+                end_time=time + duration,
+                velocity=80
+            )
+        sequence.total_time = max(times) + 0.5
+
+        # Guardar como MIDI
+        midi_filename = 'musica_navideña.mid'
+        mm.sequence_proto_to_midi_file(sequence, midi_filename)
+        
+        return midi_filename
+    except Exception as e:
+        st.error(f"Error al generar la música: {e}")
+        return None
+
 def main():
-    # CSS personalizado
     st.markdown("""
     <style>
     .stApp {
@@ -103,7 +122,6 @@ def main():
     </style>
     """, unsafe_allow_html=True)
 
-    # Selector de modo en la barra lateral
     st.sidebar.title("🎄 Modos de Generación de Villancicos")
     modo = st.sidebar.radio("Elige un modo de generación", 
         ["Modo Simple", "Modo Personalizado de Santa"]
@@ -111,7 +129,6 @@ def main():
 
     st.markdown("<h1 class='title'>🎄 Creador de Villancicos Navideños 🎅</h1>", unsafe_allow_html=True)
 
-    # Generación de letras
     if modo == "Modo Simple":
         st.write("## ¿Sobre qué será tu villancico? 🎵")
         tema_villancico = st.text_input("Ingresa un tema o asunto para tu villancico")
@@ -123,27 +140,30 @@ def main():
         edad_nino = st.number_input("¿Cuántos años tienes?", min_value=1, max_value=12, step=1)
         tema_villancico = st.text_input("¿Sobre qué te gustaría que sea tu villancico?")
 
-    # Botón de generación
     if st.button("✨ ¡Crea Mi Villancico Navideño!"):
         if tema_villancico:
             with st.spinner("Magia en progreso... 🎄✨"):
-                # Generar Letra
                 letra = generar_letra_villancico(tema_villancico, nombre_nino, edad_nino)
                 
                 if letra:
-                    # Mostrar Letra
                     st.write("### 🎵 Tu Villancico Mágico:")
                     st.write(letra)
 
-                    # Generar Imagen
                     imagen_villancico = generar_imagen_villancico(tema_villancico)
                     
                     if imagen_villancico:
                         st.write("### 🖼️ Ilustración del Villancico:")
                         st.image(imagen_villancico, caption="Tu Ilustración Navideña Mágica", width=500)
 
-                    # Opciones de Descarga
-                    col1, col2 = st.columns(2)
+                    # Generar Música
+                    midi_filename = generar_musica_navideña(letra)
+                    if midi_filename:
+                        st.write("### 🎵 Melodía del Villancico:")
+                        audio_file = open(midi_filename, 'rb')
+                        audio_bytes = audio_file.read()
+                        st.audio(audio_bytes, format='audio/midi')
+
+                    col1, col2, col3 = st.columns(3)
                     with col1:
                         st.download_button(
                             label="📝 Descargar Letra",
@@ -160,6 +180,16 @@ def main():
                                 file_name="ilustracion_villancico.png",
                                 mime="image/png"
                             )
+                    
+                    with col3:
+                        if midi_filename:
+                            with open(midi_filename, 'rb') as f:
+                                st.download_button(
+                                    label="🎵 Descargar Música",
+                                    data=f.read(),
+                                    file_name="villancico_navidad.mid",
+                                    mime="audio/midi"
+                                )
         else:
             st.warning("Por favor, ingresa un tema para tu villancico.")
 
