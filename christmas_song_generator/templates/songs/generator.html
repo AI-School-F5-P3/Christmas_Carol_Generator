@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card christmas-card">
+            <div class="card-header bg-christmas text-white text-center">
+                <h1 class="display-4">🎄 Creador de Villancicos Navideños 🎅</h1>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'generate_song' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <h4>Modo de Generación</h4>
+                        <div class="form-check">
+                            {{ form.mode }}
+                        </div>
+                    </div>
+
+                    <div class="personalized-section" id="personalizedSection" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.child_name.id_for_label }}" class="form-label">
+                                    {{ form.child_name.label }}
+                                </label>
+                                {{ form.child_name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.child_age.id_for_label }}" class="form-label">
+                                    {{ form.child_age.label }}
+                                </label>
+                                {{ form.child_age }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.theme.id_for_label }}" class="form-label">
+                            {{ form.theme.label }}
+                        </label>
+                        {{ form.theme }}
+                        {% if form.theme.errors %}
+                            <div class="text-danger">
+                                {{ form.theme.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            ✨ Crea Mi Villancico Navideño! 🎵
+                        </button>
+                    </div>
+                </form>
+
+                {% if error %}
+                    <div class="alert alert-danger mt-3">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                {% if song_lyrics %}
+                    <div class="mt-4">
+                        <div class="card">
+                            <div class="card-header bg-christmas text-white">
+                                🎵 Tu Villancico Mágico
+                            </div>
+                            <div class="card-body">
+                                <pre class="song-lyrics">{{ song_lyrics }}</pre>
+                            </div>
+                            {% if song_image_url %}
+                                <div class="card-footer text-center">
+                                    <h4>🖼️ Ilustración del Villancico</h4>
+                                    <img src="{{ song_image_url }}" alt="Ilustración Navideña" class="img-fluid rounded" style="max-width: 500px;">
+                                </div>
+                            {% endif %}
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <a href="#" class="btn btn-success btn-block" download="villancico_navidad.txt">
+                                            📝 Descargar Letra
+                                        </a>
+                                    </div>
+                                    {% if song_image_url %}
+                                    <div class="col-md-6">
+                                        <a href="{{ song_image_url }}" class="btn btn-info btn-block" download="ilustracion_villancico.png">
+                                            🖼️ Descargar Ilustración
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+        const personalizedSection = document.getElementById('personalizedSection');
+
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'personalized') {
+                    personalizedSection.style.display = 'block';
+                } else {
+                    personalizedSection.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
