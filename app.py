@@ -3,8 +3,7 @@ import streamlit as st
 from openai import AzureOpenAI, OpenAI
 from dotenv import load_dotenv
 import requests
-import elevenlabs
-from elevenlabs import generate, save
+
 
 # Cargar variables de entorno
 load_dotenv()
@@ -164,6 +163,12 @@ def main():
                             )
         else:
             st.warning("Por favor, ingresa un tema para tu villancico.")
+            
+        # Añadir reproducción de audio
+    st.sidebar.write("## 🎵 Reproducir Villancico")
+    audio_file = open("Los Cinco Estudiantes_ Un Villancico Navideño.mp3", "rb")
+    audio_bytes = audio_file.read()
+    st.sidebar.audio(audio_bytes, format="audio/mp3")
 
 if __name__ == "__main__":
     main()
