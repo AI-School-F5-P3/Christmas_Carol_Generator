@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Roboto:wght@400;700&display=swap');
+
+.villancico-generator {
+    min-height: 100vh;
+    background: url('/santa.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+    padding: 20px;
+    color: #ffffff;
+}
+
+.title-container {
+    width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+.title {
+    background: url('/wood-texture.jpg') repeat;
+    border: 10px solid #8B4513;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    padding: 20px;
+    display: inline-block;
+    transform-origin: center;
+}
+
+.title h1 {
+    font-family: 'Mountains of Christmas', cursive;
+    font-size: 3rem;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #000000;
+    margin: 0;
+}
+
+.content {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 1000px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.input-section {
+    margin-bottom: 30px;
+}
+
+.prompt-input {
+    width: 100%;
+    max-width: 100%;
+    height: 100px;
+    padding: 15px;
+    border: 2px solid #4CAF50;
+    border-radius: 10px;
+    font-size: 1rem;
+    resize: vertical;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    cursor: text;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.action-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:active {
+    transform: translateY(1px);
+}
+
+.action-button.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.action-button:disabled {
+    cursor: not-allowed;
+}
+
+.reset-button {
+    background-color: #f44336;
+}
+
+.output-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.output {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.output h2 {
+    color: #4CAF50;
+    margin-bottom: 15px;
+}
+
+.villancico-output p {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    color: #333;
+}
+
+.generated-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .output-container {
+        flex-direction: column;
+    }
+
+    .title h1 {
+        font-size: 2rem;
+    }
+}
