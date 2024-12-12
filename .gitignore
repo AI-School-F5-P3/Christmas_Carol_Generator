@@ -17,7 +17,7 @@ __pycache__/
 *.pyo
 *.pyd
 *.egg-info/
-venv/
+.venv/
 *.env
 
 # Frontend public env
